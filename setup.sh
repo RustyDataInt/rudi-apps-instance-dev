@@ -1,54 +1,85 @@
+#!/bin/bash
+set -e
 
-sudo apt-get update && apt-get install -y --no-install-recommends \
+# Main script to set up the RuDI development environment.
+
+# Read the configuration file
+if [ ! -f "config.yml" ]; then
+    echo "RuDI ERROR: 'config.yml' not found!"
+    exit 1
+fi
+RUST_TOOLCHAIN=$(grep "RUST_TOOLCHAIN:" config.yml | awk '{print $2}' | tr -d '"')
+DIOXUS_VERSION=$(grep "DIOXUS_VERSION:" config.yml | awk '{print $2}' | tr -d '"')
+
+echo 
+echo "RuDI SETUP: Setting up the RuDI development environment"
+echo "Rust toolchain: $RUST_TOOLCHAIN"
+echo "Dioxus version: $DIOXUS_VERSION"
+
+# Install system dependencies
+echo 
+echo "RuDI SETUP: Installing system dependencies"
+sudo apt-get update
+sudo apt-get install -y \
     ca-certificates \
     curl \
     git \
-    bash \
-    file \
-    unzip \
-    xz-utils \
-    \
+    nano \
+    tree \
     build-essential \
-    make \
     pkg-config \
     cmake \
-    ninja-build \
-    \
     clang \
     lld \
     llvm \
     libclang-dev \
-    \
-    protobuf-compiler \
-    \
     libssl-dev \
-    zlib1g-dev \
     libsqlite3-dev \
     libpq-dev \
-    \
-    && rm -rf /var/lib/apt/lists/*
+    zlib1g-dev \
+    protobuf-compiler
 
-mkdir -p /opt/rust/cargo /opt/rust/rustup /workspace \
-    && chmod -R a+rX /opt/rust \
-    && chmod 1777 /workspace
+# Install Rust
+echo 
+echo "RuDI SETUP: Installing Rust"
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
+    -y \
+    --default-toolchain "$RUST_TOOLCHAIN"
+source "$HOME/.cargo/env"
 
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh \
-    && CARGO_HOME=/opt/rust/cargo \
-       RUSTUP_HOME=/opt/rust/rustup \
-       sh /tmp/rustup-init.sh \
-         -y \
-         --no-modify-path \
-         --profile default \
-         --default-toolchain "${RUST_TOOLCHAIN}" \
-    && rm /tmp/rustup-init.sh
+# Install Dioxus
+echo
+echo "RuDI SETUP: Installing Dioxus"
+rustup target add wasm32-unknown-unknown
+cargo install dioxus-cli --version "$DIOXUS_VERSION"
 
-CARGO_HOME=/opt/rust/cargo \
-RUSTUP_HOME=/opt/rust/rustup \
-rustup target add wasm32-unknown-unknown --toolchain "${RUST_TOOLCHAIN}" \
-    && CARGO_HOME=/opt/rust/cargo \
-       RUSTUP_HOME=/opt/rust/rustup \
-       cargo install dioxus-cli --version "${DIOXUS_CLI_VERSION}" --locked \
-    && chmod -R a+rX /opt/rust \
-    && rustc --version \
-    && cargo --version \
-    && dx --version
+# Install RuDI
+echo
+echo "RuDI SETUP: Installing RuDI"
+cd "$HOME"
+if [ ! -d "$HOME/rudi" ]; then
+    git clone https://github.com/RustyDataInt/rudi.git
+fi
+cd "$HOME/rudi"
+./install.sh
+cd "$HOME"
+
+# Update PATH for future sessions
+echo
+echo "RuDI SETUP: Updating PATH in ~/.bashrc"
+if ! grep -q '.cargo/bin' "$HOME/.bashrc"; then
+    echo 'export PATH="$HOME/rudi:$HOME/.cargo/bin:$PATH"' >> "$HOME/.bashrc"
+fi
+
+# Confirm installation
+echo ""
+echo "RuDI SETUP: Installed versions:"
+rustc --version
+cargo --version
+dx --version
+
+# Final messages
+echo ""
+echo "RuDI SETUP: RuDI development environment setup complete!"
+echo ""
+echo "RuDI SETUP: Run 'source ~/.bashrc' or log out/in to update PATH."

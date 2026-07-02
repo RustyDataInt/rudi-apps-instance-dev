@@ -1,0 +1,5 @@
+# Configuration for a RuDI Apps Instance in developer mode
+
+# Rust and Dioxus versions
+RUST_TOOLCHAIN: "1.92.0"
+DIOXUS_VERSION: "0.7.9"
