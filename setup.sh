@@ -51,7 +51,7 @@ source "$HOME/.cargo/env"
 echo
 echo "RuDI SETUP: Installing Dioxus"
 rustup target add wasm32-unknown-unknown
-cargo install dioxus-cli --version "$DIOXUS_VERSION"
+cargo install dioxus-cli --version "$DIOXUS_VERSION" --locked
 
 # Install RuDI
 echo
@@ -68,8 +68,9 @@ cd "$HOME"
 echo
 echo "RuDI SETUP: Updating PATH in ~/.bashrc"
 if ! grep -q '.cargo/bin' "$HOME/.bashrc"; then
-    echo 'export PATH="$HOME/rudi:$HOME/.cargo/bin:$PATH"' >> "$HOME/.bashrc"
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.bashrc"
 fi
+echo 'export PATH="$HOME/rudi:$PATH"' >> "$HOME/.bashrc"
 
 # Confirm installation
 echo ""
