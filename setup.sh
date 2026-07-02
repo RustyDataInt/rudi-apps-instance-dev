@@ -1,19 +1,5 @@
-FROM ubuntu:24.04
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-ARG DEBIAN_FRONTEND=noninteractive
-
-ARG RUST_TOOLCHAIN="1.92.0"
-ARG DIOXUS_CLI_VERSION="0.7.9"
-
-# Install Rust globally into /opt/rust.
-# Do NOT set CARGO_HOME globally at runtime; users should get their own writable
-# cargo cache under $HOME/.cargo or another location they set.
-ENV RUSTUP_HOME=/opt/rust/rustup
-ENV PATH=/opt/rust/cargo/bin:${PATH}
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+sudo apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     git \
@@ -42,11 +28,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt/rust/cargo /opt/rust/rustup /workspace \
+mkdir -p /opt/rust/cargo /opt/rust/rustup /workspace \
     && chmod -R a+rX /opt/rust \
     && chmod 1777 /workspace
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh \
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh \
     && CARGO_HOME=/opt/rust/cargo \
        RUSTUP_HOME=/opt/rust/rustup \
        sh /tmp/rustup-init.sh \
@@ -56,9 +42,9 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-ini
          --default-toolchain "${RUST_TOOLCHAIN}" \
     && rm /tmp/rustup-init.sh
 
-RUN CARGO_HOME=/opt/rust/cargo \
-    RUSTUP_HOME=/opt/rust/rustup \
-    rustup target add wasm32-unknown-unknown --toolchain "${RUST_TOOLCHAIN}" \
+CARGO_HOME=/opt/rust/cargo \
+RUSTUP_HOME=/opt/rust/rustup \
+rustup target add wasm32-unknown-unknown --toolchain "${RUST_TOOLCHAIN}" \
     && CARGO_HOME=/opt/rust/cargo \
        RUSTUP_HOME=/opt/rust/rustup \
        cargo install dioxus-cli --version "${DIOXUS_CLI_VERSION}" --locked \
@@ -66,10 +52,3 @@ RUN CARGO_HOME=/opt/rust/cargo \
     && rustc --version \
     && cargo --version \
     && dx --version
-
-WORKDIR /workspace
-
-EXPOSE 8080
-EXPOSE 3000
-
-CMD ["bash"]
