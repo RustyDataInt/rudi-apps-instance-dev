@@ -34,7 +34,7 @@ From within VS Code, open the Extensions tab, then find and install:
 Launch an Ubuntu Linux compute instance, e.g., on AWS:
 - Ubuntu 26.04 arm64
 - t4g.2xlarge
-- 40 Gb gp3
+- 30 Gb gp3
 
 You can stop your developer instance when not using it and connect 
 with just the IP address, so choose a well-powered configuration for 
@@ -92,8 +92,7 @@ export GITHUB_PAT=ghp_...
 ### Install Rust, Dioxus, and RuDI
 
 Run the instance setup script as follows - the installations will  
-run for about ten minutes with 8 CPUs (more if you are using an 
-underpowered instance).
+run for up to a few minutes.
 
 ```bash
 ./setup.sh
@@ -105,8 +104,7 @@ source ~/.bashrc
 RuDI apps servers use a multi-suite installation, even if you only 
 add one tool suite. Add as many as you need, replacing `<REPO_OWNER>` 
 and `<REPO>` with the GitHub owner and name of the definitive repository,
-NOT your fork of it. Be aware that each app will use an additional
-6+ Gb disk space.
+NOT your fork of it. Be aware that each app will use 6+ Gb disk space.
 
 ```bash
 ./add.sh <REPO_OWNER>/<REPO>
@@ -114,6 +112,17 @@ NOT your fork of it. Be aware that each app will use an additional
 
 The script clones the tool suite repository and performs an initial
 build of its apps server, which will take under five minutes with 8 CPU.
+
+### OPTIONAL: Compile rudi_apps (for rudi-apps-framework developers)
+
+If you make changes to the `rudi_apps` library crate in the 
+`rudi-apps-framework`, `rust-analyzer` will need the compiled library.
+Most tool suite developers can skip this.
+
+```bash
+# OPTIONAL
+./framework.sh
+```
 
 ## Use your development apps server
 

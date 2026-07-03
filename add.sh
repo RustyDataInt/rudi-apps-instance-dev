@@ -18,4 +18,4 @@ if [ -d "$DEV_DIR" ]; then
 else 
     cd "$HOME/rudi/suites/definitive/$REPO/apps/dioxus/shared/server"
 fi
-rudi -d dx build 
+rudi -d dx build --force-sequential

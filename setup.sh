@@ -26,6 +26,7 @@ sudo apt-get install -y \
     git \
     nano \
     tree \
+    unzip \
     build-essential \
     pkg-config \
     cmake \
@@ -51,7 +52,7 @@ echo
 echo "RuDI SETUP: Installing Dioxus"
 rustup target add wasm32-unknown-unknown
 curl -sSL https://dioxus.dev/install.sh -o /tmp/install-dioxus.sh
-bash /tmp/install-dioxus.sh "dx-v$DIOXUS_VERSION"
+bash /tmp/install-dioxus.sh "v$DIOXUS_VERSION"
 rm /tmp/install-dioxus.sh
 
 # Record GitHub credentials for RuDI forked/private repos
