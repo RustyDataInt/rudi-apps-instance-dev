@@ -7,10 +7,15 @@ REPO=$(echo $TOOL_SUITE | cut -d'/' -f2)
 
 echo 
 echo "RuDI SETUP: Cloning $TOOL_SUITE"
-rudi add --suite $TOOL_SUITE
+rudi -d add --suite $TOOL_SUITE
+rudi -d install --forks
 
 echo 
 echo "RuDI SETUP: Building $REPO"
-# this could be a developer fork, installed into definitive for this instance
-cd "$HOME/rudi/suites/definitive/$REPO/apps/dioxus/shared/server"
-rudi dx build 
+DEV_DIR="$HOME/rudi/suites/developer-forks/$REPO/apps/dioxus/shared/server"
+if [ -d "$DEV_DIR" ]; then
+    cd "$DEV_DIR"
+else 
+    cd "$HOME/rudi/suites/definitive/$REPO/apps/dioxus/shared/server"
+fi
+rudi -d dx build 

@@ -42,8 +42,7 @@ sudo apt-get install -y \
 # Install Rust
 echo 
 echo "RuDI SETUP: Installing Rust"
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
-    -y \
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     --default-toolchain "$RUST_TOOLCHAIN"
 source "$HOME/.cargo/env"
 
@@ -51,7 +50,18 @@ source "$HOME/.cargo/env"
 echo
 echo "RuDI SETUP: Installing Dioxus"
 rustup target add wasm32-unknown-unknown
-cargo install dioxus-cli --version "$DIOXUS_VERSION" --locked
+curl -sSL https://dioxus.dev/install.sh -o /tmp/install-dioxus.sh
+bash /tmp/install-dioxus.sh "dx-v$DIOXUS_VERSION"
+rm /tmp/install-dioxus.sh
+
+# Record GitHub credentials for RuDI forked/private repos
+if [ "$GITHUB_USER" != "" ] || [ "$GITHUB_PAT" != "" ]; then
+    TOML_FILE="$HOME/gitCredentials.toml"
+    echo "USER_NAME   = \"NA\""  > $TOML_FILE
+    echo "USER_EMAIL  = \"NA\"" >> $TOML_FILE
+    echo "GITHUB_USER = \"$GITHUB_USER\"" >> $TOML_FILE
+    echo "GITHUB_PAT  = \"$GITHUB_PAT\""  >> $TOML_FILE
+fi
 
 # Install RuDI
 echo
