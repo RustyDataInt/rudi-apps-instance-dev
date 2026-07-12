@@ -38,7 +38,9 @@ sudo apt-get install -y \
     libsqlite3-dev \
     libpq-dev \
     zlib1g-dev \
-    protobuf-compiler
+    protobuf-compiler \
+    libfontconfig \
+    libfontconfig1-dev
 
 # Install Rust
 echo 
