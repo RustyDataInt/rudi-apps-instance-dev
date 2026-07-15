@@ -48,6 +48,7 @@ echo "RuDI SETUP: Installing Rust"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     --default-toolchain "$RUST_TOOLCHAIN"
 source "$HOME/.cargo/env"
+cargo install cargo-sweep
 
 # Install Dioxus
 echo
